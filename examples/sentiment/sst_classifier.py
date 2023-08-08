@@ -1,3 +1,6 @@
+import sys
+sys.path.append("/content/realworldnlp")
+
 from itertools import chain
 from typing import Dict
 
@@ -134,6 +137,8 @@ def main():
     logits = predictor.predict('This is the best movie ever!')['logits']
     label_id = np.argmax(logits)
 
+	print()
+    print("predictor result:")
     print(model.vocab.get_token_from_index(label_id, 'labels'))
 
 

@@ -1,2 +1,2 @@
-{"tokens": ["This", "is", "the", "best", "movie", "ever", "!"]}
-{"tokens": ["This", "is", "the", "worst", "movie", "ever", "!"]}
+{"sentence": ["This is the best movie ever !"]}
+{"sentence": ["This is the worst movie ever !"]}
