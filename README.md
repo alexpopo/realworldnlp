@@ -12,3 +12,12 @@ Examples included in this repository:
 * Part-of-speech tagging [[blog article](http://www.realworldnlpbook.com/blog/how-to-convert-an-allennlp-model-and-deploy-on-caffe2-and-tensorflow.html)] [[Colab notebook](https://colab.research.google.com/github/mhagiwara/realworldnlp/blob/master/examples/pos/pos_tagger.ipynb)]
 * Named entity recognition (NER) [[Colab notebook](https://colab.research.google.com/github/mhagiwara/realworldnlp/blob/master/examples/ner/ner.ipynb)]
 * Language generation [[Colab notebook (LSTM)](https://colab.research.google.com/github/mhagiwara/realworldnlp/blob/master/examples/generation/lm.ipynb)] [[Colab notebook (Transformers)](https://colab.research.google.com/github/mhagiwara/realworldnlp/blob/master/examples/generation/transformers.ipynb)]
+
+## 🦒 Colab
+| Colab Page | Model Page
+| --- | --- |
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/alexpopo/realworldnlp/blob/master/AllenNLP.ipynb) examples | 
+
+## Documentation
+[Improving a Sentiment Analyzer using ELMo — Word Embeddings on Steroids](http://www.realworldnlpbook.com/blog/improving-sentiment-analyzer-using-elmo.html) <br />
+[Appendix 1. Migrating from AllenNLP 0.9 to 1.0](https://github.com/jbarrow/allennlp_tutorial/blob/master/tutorial/A1_Migrating_to_1_0.md)
