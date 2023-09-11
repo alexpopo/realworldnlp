@@ -1,3 +1,10 @@
+import sys
+sys.path.append("/content/realworldnlp")
+
+from itertools import chain
+from allennlp.training import GradientDescentTrainer
+from allennlp.data.data_loaders import MultiProcessDataLoader
+
 import numpy as np
 import torch
 import torch.optim as optim
@@ -22,11 +29,10 @@ def main():
     # In order to use ELMo, each word in a sentence needs to be indexed with
     # an array of character IDs.
     elmo_token_indexer = ELMoTokenCharactersIndexer()
-    reader = StanfordSentimentTreeBankDatasetReader(
-        token_indexers={'tokens': elmo_token_indexer})
+    reader = StanfordSentimentTreeBankDatasetReader(token_indexers={'tokens': elmo_token_indexer})
 
-    train_dataset = reader.read('data/stanfordSentimentTreebank/trees/train.txt')
-    dev_dataset = reader.read('data/stanfordSentimentTreebank/trees/dev.txt')
+    train_path = 'data/stanfordSentimentTreebank/trees/train.txt'
+    dev_path = 'data/stanfordSentimentTreebank/trees/dev.txt'
 
     # Initialize the ELMo-based token embedder using a pre-trained file.
     # This takes a while if you run this script for the first time
@@ -45,33 +51,44 @@ def main():
     weight_file = ('https://s3-us-west-2.amazonaws.com/allennlp/models/elmo'
                    '/2x1024_128_2048cnn_1xhighway/elmo_2x1024_128_2048cnn_1xhighway_weights.hdf5')
 
+    train_dataset = reader.read(train_path)
+    dev_dataset = reader.read(dev_path)
+
+    # You can optionally specify the minimum count of tokens/labels.
+    # `min_count={'tokens':3}` here means that any tokens that appear less than three times
+    # will be ignored and not included in the vocabulary.
+    # vocab = Vocabulary.from_instances(chain(train_data_loader.iter_instances(), dev_data_loader.iter_instances()))
+    vocab = Vocabulary.from_instances(chain(train_dataset, dev_dataset))
+
+    sampler = BucketBatchSampler(batch_size=32, sorting_keys=["tokens"])
+    train_data_loader = MultiProcessDataLoader(reader, train_path, batch_sampler=sampler)
+    dev_data_loader = MultiProcessDataLoader(reader, dev_path, batch_sampler=sampler)
+
+    train_data_loader.index_with(vocab)
+    dev_data_loader.index_with(vocab)
     elmo_embedder = ElmoTokenEmbedder(options_file, weight_file)
 
-    vocab = Vocabulary.from_instances(train_dataset + dev_dataset,
-                                      min_count={'tokens': 3})
 
     # Pass in the ElmoTokenEmbedder instance instead
-    embedder = BasicTextFieldEmbedder({"tokens": elmo_embedder})
+    word_embeddings = BasicTextFieldEmbedder({"tokens": elmo_embedder})
 
     # The dimension of the ELMo embedding will be 2 x [size of LSTM hidden states]
     elmo_embedding_dim = 256
     lstm = PytorchSeq2VecWrapper(
         torch.nn.LSTM(elmo_embedding_dim, HIDDEN_DIM, batch_first=True))
 
-    model = LstmClassifier(embedder, lstm, vocab)
-    optimizer = optim.Adam(model.parameters())
+    model = LstmClassifier(word_embeddings, lstm, vocab)
 
-    iterator = BucketIterator(batch_size=32, sorting_keys=[("tokens", "num_tokens")])
+    optimizer = optim.Adam(model.parameters(), lr=1e-4, weight_decay=1e-5)
 
-    iterator.index_with(vocab)
-
-    trainer = Trainer(model=model,
-                      optimizer=optimizer,
-                      iterator=iterator,
-                      train_dataset=train_dataset,
-                      validation_dataset=dev_dataset,
-                      patience=10,
-                      num_epochs=20)
+    trainer = GradientDescentTrainer(
+        model=model,
+        optimizer=optimizer,
+        data_loader=train_data_loader,
+        validation_data_loader=dev_data_loader,
+        patience=10,
+        num_epochs=20,
+        cuda_device=-1)
 
     trainer.train()
 
@@ -81,6 +98,7 @@ def main():
     label_id = np.argmax(logits)
 
     print(model.vocab.get_token_from_index(label_id, 'labels'))
+
 
 if __name__ == '__main__':
     main()
