@@ -66,8 +66,8 @@ def main():
 
     train_data_loader.index_with(vocab)
     dev_data_loader.index_with(vocab)
-    elmo_embedder = ElmoTokenEmbedder(options_file, weight_file)
 
+    elmo_embedder = ElmoTokenEmbedder(options_file, weight_file)
 
     # Pass in the ElmoTokenEmbedder instance instead
     word_embeddings = BasicTextFieldEmbedder({"tokens": elmo_embedder})
@@ -86,17 +86,16 @@ def main():
         optimizer=optimizer,
         data_loader=train_data_loader,
         validation_data_loader=dev_data_loader,
-        patience=10,
-        num_epochs=20,
+        patience=2,  # 10
+        num_epochs=5,  # 20
         cuda_device=-1)
 
     trainer.train()
 
-    tokens = ['This', 'is', 'the', 'best', 'movie', 'ever', '!']
     predictor = SentenceClassifierPredictor(model, dataset_reader=reader)
-    logits = predictor.predict(tokens)['logits']
+    logits = predictor.predict('This is the best movie ever!')['logits']
     label_id = np.argmax(logits)
-
+    print()
     print(model.vocab.get_token_from_index(label_id, 'labels'))
 
 
