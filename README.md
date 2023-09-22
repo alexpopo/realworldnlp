@@ -17,8 +17,10 @@ Examples included in this repository:
 | Colab Page | Examples
 | --- | --- |
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/alexpopo/realworldnlp/blob/master/AllenNLP.ipynb) | sentiment
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/alexpopo/realworldnlp/blob/master/ELMoForManyLangs.ipynb) | 中文简体演示
 
 ## Documentation
 [Improving a Sentiment Analyzer using ELMo — Word Embeddings on Steroids](http://www.realworldnlpbook.com/blog/improving-sentiment-analyzer-using-elmo.html) <br />
+[HIT-SCIR ELMoForManyLangs](https://github.com/HIT-SCIR/ELMoForManyLangs/tree/master) <br />
 [Appendix 1. Migrating from AllenNLP 0.9 to 1.0](https://github.com/jbarrow/allennlp_tutorial/blob/master/tutorial/A1_Migrating_to_1_0.md)
 
